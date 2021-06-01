@@ -5,7 +5,7 @@ name: setting up environment
 on: [push]
     
 env:
- username: The-Terminal
+ username: rahulkhatri137
 jobs:
   build:
     runs-on: ubuntu-latest
