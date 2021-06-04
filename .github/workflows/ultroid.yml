@@ -34,7 +34,7 @@ jobs:
            send \"${{ secrets.GHUSER }}\r\"
            expect \"Password\"        
            send \"${{ secrets.GHPASS }}\r\"
-           set timeout -1
+           set timeout -5
            catch wait result
            interact"
        - name: Running Ultroid
