@@ -33,6 +33,7 @@ jobs:
            interact"
        - name: Running Bot
          timeout-minutes: 350
+         continue-on-error: true
          run: |
            cd ubot
            echo "${{ secrets.DPASS }}" | docker login -u rahulkhatri137 --password-stdin
