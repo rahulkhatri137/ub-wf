@@ -1,11 +1,9 @@
-#Docker Work na BSDK
+name: Telegram userbot
 
-name: setting up environment
-
-on: [push]
+on:
+  push:
+  workflow_dispatch:
     
-env:
- username: rahulkhatri137
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,19 +15,15 @@ jobs:
        - name: initialization
          continue-on-error: true
          run: |
-           sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
-           docker rmi `docker images -q`
            git config --global user.name "rahulkhatri137"
-           git config --global user.email "rahulkhatri137@gmail.com"         
-           sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php*
+           git config --global user.email "${{ secrets.GHMAIL }}"         
            sudo -E apt-get clean 
            sudo apt install expect -y
 
        - name: cloning repo
-         continue-on-error: true
          run: |
            expect -c " 
-           spawn git clone ${{ secrets.CREDS }} ultroid
+           spawn git clone https://github.com/rahulkhatri137/friday ubot
            expect \"Username\"        
            send \"${{ secrets.GHUSER }}\r\"
            expect \"Password\"        
@@ -37,17 +31,19 @@ jobs:
            set timeout -5
            catch wait result
            interact"
-       - name: Running Ultroid
+       - name: Running Bot
          timeout-minutes: 350
-         continue-on-error: true
          run: |
-           cd ultroid
-           docker-compose up -d
-           docker-compose logs -f
+           cd ubot
+           echo "${{ secrets.DPASS }}" | docker login -u rahulkhatri137 --password-stdin
+           docker container prune --force || true
+           docker build . --rm --force-rm --compress --no-cache=true --pull --file Dockerfile -t ubot
+           docker image ls
+           docker run --privileged --rm -i ubot
        - name: Loop workflow
          continue-on-error: true
          run: |
-              git clone https://github.com/rahulkhatri137/ult-ub-wf loop
+              git clone https://github.com/rahulkhatri137/ub-wf loop
               cd loop
               echo "1" >> loop.txt
               git add loop.txt
@@ -61,4 +57,3 @@ jobs:
               expect \"main -> main\"
               set timeout -10
               interact"
-              
