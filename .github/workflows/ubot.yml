@@ -15,17 +15,17 @@ jobs:
        - name: initialization
          continue-on-error: true
          run: |
-           git config --global user.name "rahulkhatri137"
+           git config --global user.name "${{ secrets.GHUSER }}"
            git config --global user.email "${{ secrets.GHMAIL }}"         
            sudo -E apt-get clean 
            sudo apt install expect -y
 
        - name: cloning repo
          run: |
-           git clone https://${{ secrets.GHUSER }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPO }} source
+           git clone https://${{ secrets.GHUSER }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPO }} ubot
 
        - name: Running Bot
-         timeout-minutes: 350
+         timeout-minutes: 5
          continue-on-error: true
          run: |
            cd ubot
