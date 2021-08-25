@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     
 jobs:
-  build:
+  Userbot:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,15 +22,8 @@ jobs:
 
        - name: cloning repo
          run: |
-           expect -c " 
-           spawn git clone https://github.com/rahulkhatri137/friday ubot
-           expect \"Username\"        
-           send \"${{ secrets.GHUSER }}\r\"
-           expect \"Password\"        
-           send \"${{ secrets.GHPASS }}\r\"
-           set timeout -5
-           catch wait result
-           interact"
+           git clone https://${{ secrets.GHUSER }}:${{ secrets.GH_TOKEN }}@github.com/${{ secrets.REPO }} source
+
        - name: Running Bot
          timeout-minutes: 350
          continue-on-error: true
@@ -41,20 +34,13 @@ jobs:
            docker build . --rm --force-rm --compress --no-cache=true --pull --file Dockerfile -t ubot
            docker image ls
            docker run --privileged --rm -i ubot
+
        - name: Loop workflow
          continue-on-error: true
          run: |
-              git clone https://github.com/rahulkhatri137/ub-wf loop
-              cd loop
-              echo "1" >> loop.txt
-              git add loop.txt
-              git commit -m "Workflow : Loop"
-              expect -c "
-              spawn git push -f 
-              expect \"Username\"
-              send \"${{ secrets.GHUSER }}\r\"
-              expect \"Password\"
-              send \"${{ secrets.GHPASS }}\r\"
-              expect \"main -> main\"
-              set timeout -10
-              interact"
+           git clone https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} loop
+           cd loop || exit 1
+           echo $(( RANDOM - ( RANDOM % RANDOM ) )) > loop.txt
+           git add loop.txt
+           git commit -m "Workflow : Loop"
+           git push -q https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY} HEAD:main
